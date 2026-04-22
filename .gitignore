@@ -1,6 +1,7 @@
 Leave_Management_System_Overview.odt
 
 leave_m_s_env
+.env
 pycache/
 __pycache__/
 tests/
