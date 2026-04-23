@@ -25,19 +25,12 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     '''
         Class for storing employee details
     '''
-    emp_roles = (
-        ('emp','Employee'),
-        ('rm','Reporting manager'),
-        ('tm','Team manager'),
-        ('hr','HR')
-    )
-    
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    dept = models.ForeignKey('Department',on_delete=models.PROTECT)
-    reporting_mngr = models.ForeignKey('self',on_delete=models.SET_NULL,blank=True,null=True)
-    role = models.CharField(max_length=20,choices=emp_roles)
+    department = models.ForeignKey('Department',on_delete=models.PROTECT)
+    reporting_manager = models.ForeignKey('self',on_delete=models.SET_NULL,blank=True,null=True)
+    role = models.ForeignKey('Role',on_delete=models.PROTECT)
     
     objects = EmployeeManager()
     
@@ -55,12 +48,22 @@ class Department(models.Model):
         Class for storing department details
     '''
     name = models.CharField(max_length=50,unique=True)
-    mngr = models.OneToOneField('Employee',on_delete=models.SET_NULL,blank=True,null=True,related_name='manager')
+    manager = models.OneToOneField('Employee',on_delete=models.SET_NULL,blank=True,null=True,related_name='manager')
     hr = models.OneToOneField('Employee',on_delete=models.SET_NULL,blank=True,null=True,related_name='hr')
     
     class Meta:
         db_table = 'department'
-        verbose_name_plural = 'departments'
+        verbose_name_plural = 'Departments'
     
     def __str__(self):
         return self.name
+    
+class Role(models.Model):
+    '''
+        Class to store various roles
+    '''
+    name = models.CharField(max_length=20)
+    
+    class Meta:
+        db_table = 'role'
+        verbose_name_plural = 'Roles'
