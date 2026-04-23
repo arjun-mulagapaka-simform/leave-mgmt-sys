@@ -62,7 +62,7 @@ class Role(models.Model):
     '''
         Class to store various roles
     '''
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20,unique=True)
     
     class Meta:
         db_table = 'role'
