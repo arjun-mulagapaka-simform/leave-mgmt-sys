@@ -6,20 +6,23 @@ class EmployeeManager(BaseUserManager):
    '''
         Custom manager for Employee
    '''
-   def create_user(self, email, password=None, **extra_fields):
+   def create_user(self, email, first_name, last_name, department, role, password=None, **extra_fields):
        if not email:
            raise ValueError("The Email field must be set")
        email = self.normalize_email(email)
-       user = self.model(email=email, **extra_fields)
+       user = self.model(email=email, first_name=first_name, last_name=last_name, department=department, role=role, **extra_fields)
        user.set_password(password)
        user.save(using=self._db)
        return user
    
-   def create_superuser(self, email, password=None, **extra_fields):
-       extra_fields.setdefault('is_superuser', True)
+   def create_superuser(self, email, first_name, last_name, department, role, password=None, **extra_fields):
+       extra_fields.setdefault('is_staff', True) #necessary for access to admin site
+       if not extra_fields.get('is_staff'):
+           raise ValueError("Superuser must have is_staff=True.")
+       extra_fields.setdefault('is_superuser', True) #provides all permissions to the user
        if not extra_fields.get('is_superuser'):
            raise ValueError("Superuser must have is_superuser=True.")
-       return self.create_user(email, password, **extra_fields)
+       return self.create_user(email, password, first_name, last_name, department, role, **extra_fields)
 
 class Employee(AbstractBaseUser, PermissionsMixin):
     '''
@@ -31,6 +34,7 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     department = models.ForeignKey('Department',on_delete=models.PROTECT)
     reporting_manager = models.ForeignKey('self',on_delete=models.SET_NULL,blank=True,null=True)
     role = models.ForeignKey('Role',on_delete=models.PROTECT)
+    is_staff = models.BooleanField(default=False)
     
     objects = EmployeeManager()
     
