@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'leave_mgmt_sys.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'leave-mgmt-sys',
+        'NAME': 'leave_mgmt_sys',
         'USER': 'postgres',
         'PASSWORD': os.getenv('database_pass'),
         'HOST': 'localhost',

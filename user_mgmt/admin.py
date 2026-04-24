@@ -1,3 +1,4 @@
 from django.contrib import admin
+from user_mgmt.models import *
 
-# Register your models here.
+admin.site.register([Employee,Department,Role])
