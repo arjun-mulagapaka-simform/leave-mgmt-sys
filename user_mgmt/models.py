@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.exceptions import ValidationError
 
 
 class EmployeeManager(BaseUserManager):
@@ -90,6 +91,42 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+    def clean(self):
+        """
+        Validating the incoming employee data
+        """
+        super().clean()
+        # checking if dept provided exists
+        dept_data = self.department
+        dept = Department.objects.get(pk=dept_data.id)
+        if dept is None:
+            raise ValidationError({"department": "No department with specified id."})
+
+        # checking if reporting manager exists if provided
+        reporting_mngr = self.reporting_manager
+        if reporting_mngr is not None:
+            mngr = Employee.objects.get(pk=reporting_mngr.id)
+            if mngr is None:
+                raise ValidationError(
+                    {"reporting_manager": "Reporting manager details are incorrect."}
+                )
+            if mngr.id == self.id:
+                raise ValidationError(
+                    {"reporting_manager": "Cannot be your own reporting manager."}
+                )
+            if mngr.department_id != dept_data.id:
+                raise ValidationError(
+                    {
+                        "reporting_manager": "Reporting manager should belong to same department."
+                    }
+                )
+            if mngr.role.name != "Reporting Manager":
+                raise ValidationError(
+                    {
+                        "reporting_manager": "Assigned employee is not a reporting manager."
+                    }
+                )
+
 
 class Department(models.Model):
     """
@@ -114,6 +151,37 @@ class Department(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        """
+        Validating incoming department data
+        """
+        super().clean()
+        # checking if reporting manager exists if provided
+        mngr = self.manager
+        if mngr is not None:
+            mngrobj = Employee.objects.get(pk=mngr.id)
+            if mngrobj is None:
+                raise ValidationError({"manager": "Manager details are incorrect."})
+            if mngrobj.role.name != "Manager":
+                raise ValidationError(
+                    {
+                        "manager": "Assigned employee is not a manager."
+                    }
+                )
+
+        # checking if hr exists if provided
+        hr = self.hr
+        if hr is not None:
+            hrobj = Employee.objects.get(pk=hr.id)
+            if hrobj is None:
+                raise ValidationError({"hr": "HR details are incorrect."})
+            if hrobj.role.name != "HR":
+                raise ValidationError(
+                    {
+                        "hr": "Assigned employee is not an HR."
+                    }
+                )
 
 
 class Role(models.Model):
