@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'user_mgmt',
-    'leavemanagement'
+    'leavemanagement',
+    'common'
 ]
 
 MIDDLEWARE = [
