@@ -33,35 +33,3 @@ class EmployeeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({'reporting_manager':"Assigned employee is not a reporting manager."})
         
         return attrs
-    
-class DepartmentSerializer(serializers.ModelSerializer):
-    '''
-        Serializer class for Department model
-    '''
-    class Meta:
-        model = Department
-        fields = "__all__"
-    
-    def validate(self, attrs):
-        '''
-            Validating incoming department data
-        '''
-        #checking if reporting manager exists if provided
-        mngr = attrs.get('manager')
-        if mngr is not None:
-            mngrobj = Employee.objects.get(pk=mngr.id)
-            if mngrobj is None:
-                raise serializers.ValidationError({'manager':"Manager details are incorrect."})
-            if mngrobj.role.name != 'Manager':
-                raise serializers.ValidationError({'reporting_manager':"Assigned employee is not a reporting manager."})
-            
-        #checking if hr exists if provided
-        hr = attrs.get('hr')
-        if hr is not None:
-            hrobj = Employee.objects.get(pk=hr.id)
-            if hrobj is None:
-                raise serializers.ValidationError({'hr':"HR details are incorrect."})
-            if hrobj.role.name != 'HR':
-                raise serializers.ValidationError({'reporting_manager':"Assigned employee is not a reporting manager."})
-        
-        return attrs
