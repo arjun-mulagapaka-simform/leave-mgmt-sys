@@ -52,7 +52,7 @@ class LeavePolicy(models.Model):
 
     name = models.CharField(max_length=30)
     given_days = models.IntegerField()
-    leave_type = models.CharField(max_length=15, choices=LeaveTypeEnum.choices)
+    leave_type = models.CharField(max_length=15, choices=LeaveTypeEnum.choices, unique=True)
 
     class Meta:
         verbose_name_plural = "Leave Policies"
