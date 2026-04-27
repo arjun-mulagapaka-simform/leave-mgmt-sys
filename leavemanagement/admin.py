@@ -1,3 +1,4 @@
 from django.contrib import admin
+from leavemanagement.models import *
 
-# Register your models here.
+admin.site.register([LeaveLog,LeavePolicy])

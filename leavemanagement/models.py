@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.exceptions import ValidationError
 
 class LeaveTypeEnum(models.TextChoices):
     """
@@ -60,3 +60,8 @@ class LeavePolicy(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        super().clean()
+        if self.given_days < 0:
+            raise ValidationError("Leaves cannot be in negative.")
