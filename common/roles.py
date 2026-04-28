@@ -1,6 +1,6 @@
 roles = {
     "employee": "employee",
     "reporting manager": "reporting manager",
-    "manager": "manager",
+    "manager": "team manager",
     "hr": "hr",
 }

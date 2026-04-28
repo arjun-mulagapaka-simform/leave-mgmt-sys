@@ -38,6 +38,18 @@ class IsHR(permissions.IsAuthenticated):
             return True
         return False
 
+class IsReportingManagerOrManagerOrHR(permissions.IsAuthenticated):
+    '''
+        Authenticate if requested user is an HR or a reporting manager or a manager
+    '''
+    def has_permission(self, request, view):
+        role_name = request.user.role.name
+        return role_name in [
+            roles['reporting manager'],
+            roles['manager'],
+            roles['hr']
+        ]
+
 class IsHrOfDepartment(permissions.IsAuthenticated):
     '''
         Authenticate whether requested user is HR for given department
