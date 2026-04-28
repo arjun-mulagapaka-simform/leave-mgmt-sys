@@ -1,7 +1,11 @@
 from leavemanagement.views import *
-from django.urls import path
+from django.urls import path,include
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r"leaves",LeaveViewSet,basename="myleaves")
 
 urlpatterns = [
-    path('leaves/',LeaveListCreateView.as_view(),name='viewall-create-leave'),
-    path('leaves/<int:pk>/',LeaveRetrieveUpdateView.as_view(),name='viewone-update-leave')
+    path("leaves/pending/",PendingLeavesView.as_view(),name="pending-leaves"),
+    path("",include(router.urls))
 ]
