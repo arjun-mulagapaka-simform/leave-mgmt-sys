@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'leave_mgmt_sys',
     'rest_framework',
     'rest_framework_simplejwt',
     'user_mgmt',
@@ -154,3 +155,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user_mgmt.Employee'
+
+# Celery config
+CELERY_BROKER_URL = os.environ.get("redis_url")
+CELERY_RESULT_BACKEND = os.environ.get("redis_url")
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
