@@ -33,6 +33,7 @@ class LeaveLog(models.Model):
         blank=True,
         null=True,
     )
+    reason = models.CharField(max_length=250)
     actioned_by = models.ForeignKey(
         "user_mgmt.Employee", on_delete=models.DO_NOTHING, blank=True, null=True
     )
