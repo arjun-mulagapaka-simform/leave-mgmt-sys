@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.exceptions import ValidationError
+from common.roles import roles
 
 
 class EmployeeManager(BaseUserManager):
@@ -87,6 +88,7 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = "employee"
         verbose_name_plural = "Employees"
+        ordering = ["id"]
 
     def __str__(self):
         return self.first_name + " " + self.last_name
@@ -120,7 +122,7 @@ class Employee(AbstractBaseUser, PermissionsMixin):
                         "reporting_manager": "Reporting manager should belong to same department."
                     }
                 )
-            if mngr.role.name != "Reporting Manager":
+            if mngr.role.name != roles["reporting manager"]:
                 raise ValidationError(
                     {
                         "reporting_manager": "Assigned employee is not a reporting manager."
@@ -148,6 +150,7 @@ class Department(models.Model):
     class Meta:
         db_table = "department"
         verbose_name_plural = "Departments"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -163,11 +166,9 @@ class Department(models.Model):
             mngrobj = Employee.objects.get(pk=mngr.id)
             if mngrobj is None:
                 raise ValidationError({"manager": "Manager details are incorrect."})
-            if mngrobj.role.name != "Manager":
+            if mngrobj.role.name != roles["manager"]:
                 raise ValidationError(
-                    {
-                        "manager": "Assigned employee is not a manager."
-                    }
+                    {"manager": "Assigned employee is not a manager."}
                 )
 
         # checking if hr exists if provided
@@ -176,12 +177,8 @@ class Department(models.Model):
             hrobj = Employee.objects.get(pk=hr.id)
             if hrobj is None:
                 raise ValidationError({"hr": "HR details are incorrect."})
-            if hrobj.role.name != "HR":
-                raise ValidationError(
-                    {
-                        "hr": "Assigned employee is not an HR."
-                    }
-                )
+            if hrobj.role.name != roles["hr"]:
+                raise ValidationError({"hr": "Assigned employee is not an HR."})
 
 
 class Role(models.Model):
@@ -194,6 +191,7 @@ class Role(models.Model):
     class Meta:
         db_table = "role"
         verbose_name_plural = "Roles"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
