@@ -1,13 +1,12 @@
-from rest_framework.exceptions import ValidationError
 from rest_framework import generics, viewsets, views
-from user_mgmt.models import Employee
 from leavemanagement.models import *
 from leavemanagement.serializers import LeaveLogSerializer
 from common.permissions import *
 from common.scopeservice import *
 from rest_framework.status import *
 from rest_framework.response import Response
-from leavemanagement.leavebalanceservice import *
+from leavemanagement.services.leavebalanceservice import *
+from leavemanagement.tasks import *
 
 
 class LeaveViewSet(viewsets.ModelViewSet):
@@ -86,19 +85,23 @@ class LeaveViewSet(viewsets.ModelViewSet):
                 "Your end date is set to Sunday. Please change.",
                 status=HTTP_400_BAD_REQUEST,
             )
-            
+
         # leave balance logic
         pendingleaves = LeaveBalance.get_balance(request.user)
-        if pendingleaves[leave_type] < ((end_date-start_date).days + 1):
+        if pendingleaves[leave_type] < ((end_date - start_date).days + 1):
             return Response(
                 f"You only have {pendingleaves[leave_type]} {leave_type} leaves remaining.",
-                HTTP_400_BAD_REQUEST
+                HTTP_400_BAD_REQUEST,
             )
 
-        return super().create(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        serializer.save(employee=self.request.user)
+        serializer.save(employee=request.user)
+        reason = data.get("reason")
+        try:
+            send_leave_request_mail.delay(request.user.id, reason, start_date, end_date)
+        except:
+            pass
+        finally:
+            return Response(serializer.data, status=HTTP_200_OK)
 
 
 class PendingLeavesView(generics.ListAPIView):
@@ -156,8 +159,12 @@ class ApproveOrRejectLeaveView(generics.UpdateAPIView):
             )
 
         serializer.save(actioned_by=request.user)
-
-        return Response(serializer.data, status=HTTP_200_OK)
+        try:
+            approve_reject_mail.delay(instance.id, new_status, rejection_reason, request.user.id)
+        except Exception as e:
+            print(e)
+        finally:
+            return Response(serializer.data, status=HTTP_200_OK)
 
 
 class GetLeaveBalance(views.APIView):
@@ -169,7 +176,5 @@ class GetLeaveBalance(views.APIView):
 
     def get(self, request, format=None):
         pendingleaves = LeaveBalance.get_balance(request.user)
-        
-        return Response(
-            {"leave balance": pendingleaves}, status=HTTP_200_OK
-        )
+
+        return Response({"leave balance": pendingleaves}, status=HTTP_200_OK)

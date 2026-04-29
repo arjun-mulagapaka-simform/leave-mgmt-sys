@@ -163,3 +163,12 @@ CELERY_RESULT_BACKEND = os.environ.get("redis_url")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+# Email config
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("email_host")
+EMAIL_HOST_PASSWORD = os.environ.get("email_pass")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
