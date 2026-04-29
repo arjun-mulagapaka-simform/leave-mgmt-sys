@@ -1,5 +1,5 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, views
 from user_mgmt.models import Employee
 from leavemanagement.models import *
 from leavemanagement.serializers import LeaveLogSerializer
@@ -7,6 +7,7 @@ from common.permissions import *
 from common.scopeservice import *
 from rest_framework.status import *
 from rest_framework.response import Response
+from leavemanagement.leavebalanceservice import *
 
 
 class LeaveViewSet(viewsets.ModelViewSet):
@@ -21,25 +22,30 @@ class LeaveViewSet(viewsets.ModelViewSet):
         leaves = LeaveLog.objects.filter(employee=self.request.user)
         return leaves
 
-    def is_overlapping(self,new_start_date,new_end_date,existing_leaves):
-        '''
+    def is_overlapping(self, new_start_date, new_end_date, existing_leaves):
+        """
         Check for overlapping leaves
-        '''
-        if existing_leaves.filter(start_date__lte=new_end_date,start_date__gte=new_start_date).exists():
+        """
+        if existing_leaves.filter(
+            start_date__lte=new_end_date, start_date__gte=new_start_date
+        ).exists():
             return True
-        elif existing_leaves.filter(start_date__lte=new_start_date,end_date__gte=new_end_date).exists():
+        elif existing_leaves.filter(
+            start_date__lte=new_start_date, end_date__gte=new_end_date
+        ).exists():
             return True
-        elif existing_leaves.filter(end_date__gte=new_start_date,end_date__lte=new_end_date).exists():
+        elif existing_leaves.filter(
+            end_date__gte=new_start_date, end_date__lte=new_end_date
+        ).exists():
             return True
         return False
-        
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
-        
+
         # overlapping leaves logic
         start_date = data.get("start_date")
         end_date = data.get("end_date")
@@ -53,8 +59,8 @@ class LeaveViewSet(viewsets.ModelViewSet):
                 )
             except:
                 pass
-            
-            if self.is_overlapping(start_date,end_date,same_user_leaves):
+
+            if self.is_overlapping(start_date, end_date, same_user_leaves):
                 return Response(
                     "You are trying to create an overlapping leave which is not allowed.",
                     status=HTTP_400_BAD_REQUEST,
@@ -68,7 +74,7 @@ class LeaveViewSet(viewsets.ModelViewSet):
                 f"You can have only {leavepolicy.given_days} days for {leave_type} leave. Please change duration.",
                 status=HTTP_400_BAD_REQUEST,
             )
-            
+
         # weekdays validation
         if start_date.weekday() == 6:
             return Response(
@@ -81,8 +87,16 @@ class LeaveViewSet(viewsets.ModelViewSet):
                 status=HTTP_400_BAD_REQUEST,
             )
             
+        # leave balance logic
+        pendingleaves = LeaveBalance.get_balance(request.user)
+        if pendingleaves[leave_type] < ((end_date-start_date).days + 1):
+            return Response(
+                f"You only have {pendingleaves[leave_type]} {leave_type} leaves remaining.",
+                HTTP_400_BAD_REQUEST
+            )
+
         return super().create(request, *args, **kwargs)
-    
+
     def perform_create(self, serializer):
         serializer.save(employee=self.request.user)
 
@@ -124,13 +138,13 @@ class ApproveOrRejectLeaveView(generics.UpdateAPIView):
         if instance.status != "pen":
             return Response(
                 {"detail": "Leave request already acknowledged"},
-                status=HTTP_400_BAD_REQUEST
+                status=HTTP_400_BAD_REQUEST,
             )
 
         if instance.employee == request.user:
             return Response(
                 {"detail": "Cannot approve your own leave request."},
-                status=HTTP_400_BAD_REQUEST
+                status=HTTP_400_BAD_REQUEST,
             )
 
         new_status = data.get("status")
@@ -138,10 +152,24 @@ class ApproveOrRejectLeaveView(generics.UpdateAPIView):
 
         if new_status == "rej" and not rejection_reason:
             return Response(
-                {"detail": "Provide a rejection reason."},
-                status=HTTP_400_BAD_REQUEST
+                {"detail": "Provide a rejection reason."}, status=HTTP_400_BAD_REQUEST
             )
 
         serializer.save(actioned_by=request.user)
 
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class GetLeaveBalance(views.APIView):
+    """
+    Get remaining leave balance for user.
+    """
+
+    permission_classes = [IsEmployee]
+
+    def get(self, request, format=None):
+        pendingleaves = LeaveBalance.get_balance(request.user)
+        
+        return Response(
+            {"leave balance": pendingleaves}, status=HTTP_200_OK
+        )
