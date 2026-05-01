@@ -1,11 +1,8 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-
 from user_mgmt.models import Employee
-
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import Employee
-
+from crispy_forms.helper import FormHelper
 
 class EmployeeCreationForm(forms.ModelForm):
     password1 = forms.CharField(widget=forms.PasswordInput)
@@ -24,13 +21,12 @@ class EmployeeCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"])   # important
+        user.set_password(self.cleaned_data["password1"])  # important
         if commit:
             user.save()
         return user
-    
-    
-    
+
+
 class EmployeeChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
 
@@ -40,3 +36,17 @@ class EmployeeChangeForm(forms.ModelForm):
 
     def clean_password(self):
         return self.initial["password"]
+
+
+class EmployeeLoginForm(forms.Form):
+    """
+    Login form for Employee
+    """
+
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False

@@ -6,11 +6,19 @@ from rest_framework_simplejwt.views import (
 )
 from user_mgmt.views import *
 
+app_name = "usermanagement"
+
 urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/logout/", TokenBlacklistView.as_view(), name="logout"),
     # employee manipulation urls
-    path("employees/",EmployeeListView.as_view(),name='list-employees'),
-    path("employees/<int:pk>/",EmployeeRetrieveUpdateView.as_view(),name='retrieve-employee'),  
+    path("employees/", EmployeeListView.as_view(), name="list-employees"),
+    path(
+        "employees/<int:pk>/",
+        EmployeeRetrieveUpdateView.as_view(),
+        name="retrieve-employee",
+    ),
+    # employee template urls
+    path("login/", employee_login_view, name="login-page"),
 ]

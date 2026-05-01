@@ -1,0 +1,25 @@
+{% extends 'common/base.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'user_mgmt/style.css' %}">
+{% endblock css %}
+
+{% block js %}
+    <script src="{% static 'user_mgmt/app.js' %}"></script>
+{% endblock js %}
+
+{% block title %}
+    Login Page
+{% endblock title %}
+
+{% block content %}
+    <form class="login-form" method="POST" onSubmit="login(event)">
+        {% csrf_token %}
+        {% crispy form %}
+        <input type="submit" class="btn btn-primary" value="Login">
+        <div id="login-errors"></div>
+    </form>
+{% endblock content %}

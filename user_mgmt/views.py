@@ -1,7 +1,12 @@
+from rest_framework_simplejwt.tokens import RefreshToken
 from common.scopeservice import ScopeOfEmployee
 from common.permissions import *
-from rest_framework import generics
+from rest_framework import generics, views
+from rest_framework.response import Response
+from rest_framework.status import *
 from user_mgmt.serializers import *
+from django.shortcuts import render
+from user_mgmt.forms import EmployeeLoginForm
 
 
 class EmployeeListView(generics.ListAPIView):
@@ -13,11 +18,12 @@ class EmployeeListView(generics.ListAPIView):
 
     serializer_class = EmployeeSerializer
     permission_classes = [IsReportingManagerOrManagerOrHR]
-    filterset_fields = ['first_name','last_name','department']
+    filterset_fields = ["first_name", "last_name", "department"]
 
     def get_queryset(self):
         employees = ScopeOfEmployee.get_employee_scope(request=self.request)
         return employees
+
 
 class EmployeeRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     """
@@ -29,10 +35,15 @@ class EmployeeRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     def get_queryset(self):
         employees = ScopeOfEmployee.get_employee_scope(request=self.request)
         return employees
-    
+
     def get_permissions(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return [IsReportingManagerOrManagerOrHR()]
-        elif self.request.method in ['PUT','PATCH']:
+        elif self.request.method in ["PUT", "PATCH"]:
             return [IsManager()]
         return super().get_permissions()
+
+
+def employee_login_view(request):
+    form = EmployeeLoginForm()
+    return render(request, "user_mgmt/login.html", {"form": form})
