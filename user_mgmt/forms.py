@@ -36,17 +36,3 @@ class EmployeeChangeForm(forms.ModelForm):
 
     def clean_password(self):
         return self.initial["password"]
-
-
-class EmployeeLoginForm(forms.Form):
-    """
-    Login form for Employee
-    """
-
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_tag = False

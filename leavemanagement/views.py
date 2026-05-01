@@ -1,3 +1,4 @@
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import generics, viewsets, views
 from leavemanagement.models import *
 from leavemanagement.serializers import LeaveLogSerializer
@@ -181,10 +182,3 @@ class GetLeaveBalance(views.APIView):
         pendingleaves = LeaveBalance.get_balance(request.user)
 
         return Response({"leave balance": pendingleaves}, status=HTTP_200_OK)
-
-
-def get_dashboard_view(request):
-    """
-    Returns dashboard page
-    """
-    return render(request, "leavemanagement/dashboard.html")

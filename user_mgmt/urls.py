@@ -18,7 +18,5 @@ urlpatterns = [
         "employees/<int:pk>/",
         EmployeeRetrieveUpdateView.as_view(),
         name="retrieve-employee",
-    ),
-    # employee template urls
-    path("login/", employee_login_view, name="login-page"),
+    )
 ]

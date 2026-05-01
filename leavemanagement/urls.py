@@ -11,6 +11,4 @@ urlpatterns = [
     path("<int:pk>/reject/", ApproveOrRejectLeaveView.as_view(), name="reject-leave"),
     path("balance/", GetLeaveBalance.as_view(), name="leave-balance"),
     path("", include(router.urls)),
-    # frontend urls
-    path("dashboard/", get_dashboard_view, name="get-dashboard"),
 ]
