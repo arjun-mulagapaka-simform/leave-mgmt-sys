@@ -1,0 +1,52 @@
+{% extends 'frontend/index.html' %}
+
+{% load static %}
+{% block title %}
+    Request Leave
+{% endblock title %}
+
+{% block content %}
+    <div class="dashboard-container">
+        <h2>Request Leave</h2>
+
+        <form id="leave-request-form" class="login-form">
+            <div class="mb-3">
+                <label for="leave_type" class="form-label">Leave Type</label>
+                <select id="leave_type" class="form-select" required>
+                    <option value="">Select leave type</option>
+                    <option value="paid">Paid Leave</option>
+                    <option value="unpaid">Unpaid Leave</option>
+                    <option value="compensation">Compensation Leave</option>
+                    <option value="incident">Incident Leave</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" id="start_date" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" id="end_date" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="reason" class="form-label">Reason</label>
+                <textarea id="reason" class="form-control" rows="4" maxlength="500" placeholder="Provide your reason..." required></textarea>
+            </div>
+
+            <div id="leave-errors" class="text-danger mb-3"></div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'frontend/app.js' %}"></script>
+    <script src="{% static 'frontend/requestleave.js' %}"></script>
+{% endblock scripts %}

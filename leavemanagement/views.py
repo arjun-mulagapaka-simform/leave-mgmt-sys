@@ -118,7 +118,7 @@ class PendingLeavesView(generics.ListAPIView):
         employees = ScopeOfEmployee.get_employee_scope(request=self.request)
         leaves = LeaveLog.objects.filter(employee__in=employees).filter(status="pen")
         return leaves
-
+ 
 
 class ApproveOrRejectLeaveView(generics.UpdateAPIView):
     """

@@ -6,27 +6,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Redirect to login if not authenticated
     if (!refreshToken) {
-        window.location.href = BASE_URL + "login/";
+        window.location.href = BASE_URL + "login";
         return;
     }
 
     // Show navbar if logged in
     if (navlinks) {
         navlinks.hidden = false;
-    }
-
-    try {
-        // Welcome sign
-        await welcome_sign();
-
-        // Leave balance display
-        await leave_balance_display();
-
-        // Leave requests display
-        await leave_requests_display();
-
-    } catch (e) {
-        console.error("Dashboard error:", e);
     }
 });
 
@@ -47,7 +33,7 @@ async function authFetch(url, options = {}) {
         const refreshed = await refreshAccessToken();
 
         if (!refreshed) {
-            window.location.href = "/login/";
+            window.location.href = "login";
             return;
         }
 
@@ -122,8 +108,9 @@ async function logout(event) {
         // Even if API fails, clear tokens
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        localStorage.removeItem("currentUser");
 
-        window.location.href = BASE_URL + "login/";
+        window.location.href = BASE_URL + "login";
 
     } catch (e) {
         console.error(e);
@@ -132,98 +119,32 @@ async function logout(event) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
 
-        window.location.href = BASE_URL + "login/";
+        window.location.href = BASE_URL + "login";
     }
 }
 
-async function fetch_leave_balance() {
-    const accessToken = localStorage.getItem("accessToken");
-    try {
-        const response = await authFetch(BASE_URL + "leaves/balance/",{
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${accessToken}`
-            }
-        })
-        const data = await response.json();
-        return data["leave balance"];
-    }catch (e) {
-        console.error("Dashboard error:", e);
-    }
-}
+const status_map = {
+    "pen": "Pending",
+    "rej": "Rejected",
+    "apr": "Approved"
+};
 
-async function fetch_leave_requests(){
-    const accessToken = localStorage.getItem("accessToken");
-    try {
-        const response = await authFetch(BASE_URL + "leaves/leaves/",{
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${accessToken}`
-            }
-        })
-        const data = await response.json();
-        return data;
-    }catch (e) {
-        console.error("Dashboard error:", e);
-    }
-}
+const status_class = {
+    "pen": "badge bg-warning",
+    "rej": "badge bg-danger",
+    "apr": "badge bg-success"
+};
 
-async function welcome_sign(){
-    const response = await getCurrentUser();
-    const user = response.user;
-    localStorage.setItem("currentUser", JSON.stringify(user));
-    document.querySelector("h2").innerText = `Welcome, ${user.first_name + " " + user.last_name} 👋`;
-}
+const leave_type = {
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "compensation": "Compensation",
+    "incident": "Incident"
+};
 
-async function leave_balance_display(){
-    const balance = await fetch_leave_balance();
-
-    const balanceCardsContainer = document.querySelector(".cards");
-
-    if (balance) {
-        for (const [type, value] of Object.entries(balance)) {
-            balanceCardsContainer.innerHTML += `
-                <div class="card">
-                    <h5>${type}</h5>
-                    <p>${value} days</p>
-                </div>
-            `;
-        }
-    }else{
-        balanceCardsContainer.innerHTML = `<p>No leave balance data found!</p>`;
-    }
-}
-
-async function leave_requests_display(){
-    const leaves = await fetch_leave_requests();
-
-    const leaveCardsContainer = document.getElementById("table-body");
-
-    const status_map = {
-        "pen": "Pending",
-        "rej": "Rejected",
-        "apr": "Approved"
-    };
-
-    const status_class = {
-        "pen": "badge bg-warning",
-        "rej": "badge bg-danger",
-        "apr": "badge bg-success"
-    };
-
-    if (leaves.count > 0) {
-        for (const leave of leaves.results) {
-            leaveCardsContainer.innerHTML += `
-                <tr>
-                    <td>${leave.leave_type}</td>
-                    <td>${leave.start_date} - ${leave.end_date}</td>
-                    <td><span class="${status_class[leave.status]}">${status_map[leave.status]}</span></td>
-                </tr>
-            `;
-        }
-    }else{
-        leaveCardsContainer.innerHTML = `<p>No leave requests found!</p>`;
-    }
+const roles = {
+    "employee": 2,
+    "reporting manager": 3,
+    "manager": 4,
+    "hr": 5,
 }

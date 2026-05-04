@@ -1,0 +1,32 @@
+{% extends 'frontend/index.html' %}
+
+{% load static %}
+
+{% block title %}
+    Leave Details
+{% endblock title %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <h2>Leave Details</h2>
+
+    <div class="card-section">
+        <div class="card" id="leave-details">
+
+            
+
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'leave-history' %}" class="btn btn-secondary">Back</a>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'frontend/app.js' %}"></script>
+<script src="{% static 'frontend/leave.js' %}"></script>
+{% endblock scripts %}
