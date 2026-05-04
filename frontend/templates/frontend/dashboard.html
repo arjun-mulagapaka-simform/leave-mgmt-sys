@@ -5,3 +5,49 @@
 {% block title %}
     Dashboard
 {% endblock title %}
+
+{% block content %}
+    <div class="dashboard-container">
+
+        <h2>Welcome 👋</h2>
+
+        <!-- Leave Balance -->
+        <div class="card-section">
+            <h4>Leave Balance</h4>
+            <div class="cards">
+                {% comment %} Data injected through JS {% endcomment %}
+            </div>
+        </div>
+
+        <!-- Recent Requests -->
+        <div class="card-section">
+            <h4>Recent Leave Requests</h4>
+            <table class="table">
+                <thead id="table-head">
+                    <tr>
+                        <th>Type</th>
+                        <th>Dates</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    {% comment %} leave requests injected through JS {% endcomment %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card-section">
+            <h4>Quick Actions</h4>
+            <div class="actions">
+                <a href="#" class="btn btn-primary">Request Leave</a>
+                <a href="#" class="btn btn-secondary">View All Leaves</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'frontend/app.js' %}"></script>
+{% endblock scripts %}

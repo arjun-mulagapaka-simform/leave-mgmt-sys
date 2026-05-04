@@ -50,3 +50,33 @@ body {
 #login-errors {
     color: red;
 }
+
+/* Dashboard page css */
+.dashboard-container {
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 40px;
+}
+
+.card-section {
+    margin-bottom: 30px;
+}
+
+.cards {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    flex: 1;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}

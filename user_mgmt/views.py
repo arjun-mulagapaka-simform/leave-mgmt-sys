@@ -3,6 +3,9 @@ from common.permissions import *
 from rest_framework import generics
 from rest_framework.status import *
 from user_mgmt.serializers import *
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 
 class EmployeeListView(generics.ListAPIView):
@@ -38,3 +41,17 @@ class EmployeeRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         elif self.request.method in ["PUT", "PATCH"]:
             return [IsManager()]
         return super().get_permissions()
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def me(request):
+    """
+    Returns the details of user
+    """
+    user = EmployeeSerializer(instance=request.user)
+    return Response(
+        {
+            "user": user.data,
+        }
+    )

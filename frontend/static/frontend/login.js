@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // If already logged in, skip login page
     if (refreshToken) {
-        window.location.href = BASE_URL + "leaves/dashboard/";
+        window.location.href = BASE_URL;
     }
 });
 
