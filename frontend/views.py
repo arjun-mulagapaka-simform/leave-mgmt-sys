@@ -17,4 +17,4 @@ def pending_leaves_view(request):
     return render(request,"frontend/pendingleaves.html")
 
 def request_leave_view(request):
-    return render(request,"frontend/requestleave.html")
+    return render(request,"frontend/requestleave.html",{"form":LeaveRequestForm()})
