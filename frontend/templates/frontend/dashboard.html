@@ -1,0 +1,37 @@
+{% extends 'frontend/index.html' %}
+
+{% load static %}
+
+{% block title %}
+    Dashboard
+{% endblock title %}
+
+{% block content %}
+    <div class="dashboard-container">
+
+        <h2>Welcome 👋</h2>
+
+        <!-- Leave Balance -->
+        <div class="card-section">
+            <h4>Leave Balance</h4>
+            <div class="cards">
+                {% comment %} Data injected through JS {% endcomment %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card-section">
+            <h4>Quick Actions</h4>
+            <div class="actions">
+                <a href="{% url 'leave-request' %}" class="btn btn-primary">Request Leave</a>
+                <a href="{% url 'leave-history' %}" class="btn btn-secondary">View All Leaves</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'frontend/app.js' %}"></script>
+    <script src="{% static 'frontend/dashboard.js' %}"></script>
+{% endblock scripts %}

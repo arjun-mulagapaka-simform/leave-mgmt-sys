@@ -3,11 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from user_mgmt.forms import *
 from user_mgmt.models import *
 
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import Employee
-from .forms import EmployeeCreationForm, EmployeeChangeForm
-
 
 @admin.register(Employee)
 class EmployeeAdmin(UserAdmin):
@@ -48,6 +43,14 @@ class EmployeeAdmin(UserAdmin):
 
     ordering = ("email",)
 
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    model = Role
+
+    list_display = ("id", "name")
+
+    ordering = ("id",)
+
 
 # admin.site.register(Employee)
-admin.site.register([Department, Role])
+admin.site.register(Department)

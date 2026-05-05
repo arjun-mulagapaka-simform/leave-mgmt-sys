@@ -1,3 +1,4 @@
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import generics, viewsets, views
 from leavemanagement.models import *
 from leavemanagement.serializers import LeaveLogSerializer
@@ -7,6 +8,7 @@ from rest_framework.status import *
 from rest_framework.response import Response
 from leavemanagement.services.leavebalanceservice import *
 from leavemanagement.tasks import *
+from django.shortcuts import render
 
 
 class LeaveViewSet(viewsets.ModelViewSet):
@@ -116,7 +118,7 @@ class PendingLeavesView(generics.ListAPIView):
         employees = ScopeOfEmployee.get_employee_scope(request=self.request)
         leaves = LeaveLog.objects.filter(employee__in=employees).filter(status="pen")
         return leaves
-
+ 
 
 class ApproveOrRejectLeaveView(generics.UpdateAPIView):
     """
@@ -160,7 +162,9 @@ class ApproveOrRejectLeaveView(generics.UpdateAPIView):
 
         serializer.save(actioned_by=request.user)
         try:
-            approve_reject_mail.delay(instance.id, new_status, rejection_reason, request.user.id)
+            approve_reject_mail.delay(
+                instance.id, new_status, rejection_reason, request.user.id
+            )
         except Exception as e:
             print(e)
         finally:

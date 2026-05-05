@@ -1,0 +1,29 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'frontend/style.css' %}">
+    <script src="{% static 'frontend/login.js' %}"></script>
+    <title>Login page</title>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-inner">
+            <span>Leave Management System</span>
+        </div>
+    </header>
+    <div class="content">
+        <form class="login-form" method="POST" onSubmit="login(event)">
+            {% csrf_token %}
+            {% crispy form %}
+            <input type="submit" class="btn btn-primary" value="Login">
+            <div id="login-errors"></div>
+        </form>
+    </div>
+</body>
+</html>

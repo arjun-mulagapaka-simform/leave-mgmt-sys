@@ -1,0 +1,40 @@
+{% extends 'frontend/index.html' %}
+
+{% load static %}
+
+{% block title %}
+    Leave History
+{% endblock title %}
+
+{% block content %}
+    <div class="dashboard-container">
+
+        <!-- Recent Requests -->
+        <div class="card-section">
+            <h4>Recent Leave Requests</h4>
+            <table class="table">
+                <thead id="table-head">
+                    <tr>
+                        <th>Type</th>
+                        <th>Dates</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    {% comment %} leave requests injected through JS {% endcomment %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="actions">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back</a>
+        </div>
+
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'frontend/app.js' %}"></script>
+    <script src="{% static 'frontend/leavehistory.js' %}"></script>
+{% endblock scripts %}

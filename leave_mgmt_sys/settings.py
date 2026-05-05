@@ -42,12 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
+    'crispy_bootstrap4',
     'leave_mgmt_sys',
     'rest_framework',
     'rest_framework_simplejwt',
     'user_mgmt',
     'leavemanagement',
-    'common'
+    'common',
+    'frontend'
 ]
 
 MIDDLEWARE = [
@@ -61,6 +64,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'leave_mgmt_sys.urls'
+
+#CRISPY TEMPLATE PACK
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 TEMPLATES = [
     {

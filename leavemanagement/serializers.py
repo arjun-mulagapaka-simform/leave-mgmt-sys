@@ -4,10 +4,18 @@ from user_mgmt.models import *
 from datetime import date
 
 
+class EmployeeMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ["id", "first_name", "last_name"]
+
+
 class LeaveLogSerializer(serializers.ModelSerializer):
     """
     Serializer class for the model LeaveLog
     """
+
+    actioned_by = EmployeeMiniSerializer(read_only=True)
 
     class Meta:
         model = LeaveLog
